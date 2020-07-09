@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+		/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Google Map API</title>
+		<style>
+			#autocomplete-input-from,
+			#autocomplete-input-to {
+				width: 200px;
+				padding: 10px;
+				margin: 50px auto;
+				display: table;
+			}
+			.center-content {
+				display: flex;
+				justify-content: center;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" id="autocomplete-input-from" />
+		<input type="text" id="autocomplete-input-to" />
+
+		<div class="center-content">
+			<h2>Open Console of your browser to see more</h2>
+		</div>
+	</body>
+	<script
+		type="text/javascript"
+		src="https://maps.google.com/maps/api/js?key=AIzaSyA89OrYazKAQbDbExoW0LoOxRfDI2fyDuc&sensor=false&libraries=places"
+	></script>
+	<script>
+		let place1 = { lat: 0, lon: 0 };
+		let place2 = { lat: 0, lon: 0 };
+		let from = document.getElementById('autocomplete-input-from');
+		let autocomplete_from = new google.maps.places.Autocomplete(from);
+		autocomplete_from.addListener('place_changed', function () {
+			let place = autocomplete_from.getPlace();
+			console.log('Location 1: ', place);
+			place1 = {
+				lat: place.geometry.location.lat(),
+				lon: place.geometry.location.lng(),
+			};
+		});
+
+		let to = document.getElementById('autocomplete-input-to');
+		let autocomplete_to = new google.maps.places.Autocomplete(to);
+		autocomplete_to.addListener('place_changed', function () {
+			let place = autocomplete_to.getPlace();
+			console.log('Location 2: ', place);
+			place2 = {
+				lat: place.geometry.location.lat(),
+				lon: place.geometry.location.lng(),
+			};
+
+			let lat1 = place1.lat,
+				lon1 = place1.lon,
+				lat2 = place2.lat,
+				lon2 = place2.lon;
+			var R = 6371;
+			var dLat = ((lat2 - lat1) * Math.PI) / 180;
+			var dLon = ((lon2 - lon1) * Math.PI) / 180;
+			var a =
+				Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+				Math.cos((lat1 * Math.PI) / 180) *
+					Math.cos((lat2 * Math.PI) / 180) *
+					Math.sin(dLon / 2) *
+					Math.sin(dLon / 2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			var distance = R * c;
+			if (distance >= 1) {
+				distance = Math.round(distance) + 'km';
+			} else {
+				distance = Math.round(distance * 1000) + 'm';
+			}
+			console.log('Distance', distance);
+		});
+	</script>
+</html>
